@@ -1,0 +1,18 @@
+*mysql 접속
+mysql -u root -p
+->password 입력
+
+show databases
+
+use db명
+
+select 컬럼명 from tabel명 
+
+
+*mysql 쿼리문
+
+DELETE 테이블 데이터 내용 삭제
+DELETE TABLE [테이블명}
+
+TRUNCATE 테이블 데이터 내용 삭제
+TRUNCATE [테이블명]
