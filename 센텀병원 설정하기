@@ -1,0 +1,13 @@
+센텀 병원 내부망 설정
+
+1. python pandas 라이브러리 설치
+ - db_csv 저장
+
+2. 차압센서 값 db 저장 python코드 추가
+
+3. 
+
+db_csv_save_reset
+db_csv_save
+db_reset
+input_data_test

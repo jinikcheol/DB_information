@@ -1,0 +1,107 @@
+<기존 미세먼지 모니터링> - data 방식 - 외부망(광주서버)
+1. purple_air
+ - http://${sensor.ip}/json?live=false
+ 
+2. airlab
+ - http://c-airlab.com/api/data/DustResearchLastOne?REQUESTCODE=DRDY0827&DEVICEID=${sensor.device_id}
+
+ > 미세먼지 센서 -> 광주서버(AWS) -> api호출 -> JSON형식 데이터 수신 및 파싱 후 DB에 적재 -> sensor_id 및 sensor data 검색, vue.js 모니터링 화면으로 data 전송 
+
+
+
+<센텀병원 미세먼지 + 차압 모니터링> - data 방식 - 외부망
+1. airlab
+ - http://c-airlab.com/api/data/DustResearchLastOne?REQUESTCODE=DRDY0827&DEVICEID=${sensor.device_id}
+
+ > 미세먼지 센서 -> 광주서버(AWS) -> api호출 -> JSON형식 데이터 수신 및 파싱 후 DB에 적재 -> * 차압값 저장하기 위해 python으로 최근 sersor_id 조회 및 sensor data 호출 -> 문자열 파싱하여 'Pa':"차압값" 삽입한 후 다시 DB로 update(최근 sensor_id의 data 컬럼에 저장) (JSON 형식 유지)  
+ -> 최근 sensor_id 및 sensor data 검색 후 JSON 형식으로 vue.js 모니터링 화면으로 data 전송
+
+
+
+* DB에 저장되는 sensor data 저장하는 JSON 형식
+var data = {
+    data :
+      {
+        device_id : device_id,
+        save_date : save_date,
+        co2 : co2,
+        pm25 : dust2_5,
+        pm10 : dust10,
+        pm1 : dust1_0,
+        temp : temp,
+        humi : humi,
+        pa: pa_data
+      },
+     state : state
+   };
+
+
+
+
+* JSON 형식으로 DB 저장
+{"data":{"device_id":"AW10-2103009","save_date":"2021-05-13 10:18:55","co2":"704","pm25":"8","pm10":"19","pm1":"5","temp":"25.48","humi":"39.55","pa":"3"},"state":"31"}
+
+
+
+
+* vue.js로 sensor data 보내는 JSON 형식
+{
+    pm1: dust.pm10,
+    pm2_5: dust.pm25,
+    pm10: dust.pm10,
+    co2: dust.co2,
+    pm1Particles: dust.pm10,
+    humidity: dust.humi,
+    temperature: dust.temp,
+    createdAt: moment(dust.created_at).format('LLL'),
+    pa: dust.pa
+  }
+
+
+
+
+* api 호출 -> JSON 형식 data
+ -> http://127.0.0.1:3000/last_data/:sensor_id
+
+{"pm1":"0","pm2_5":"6","pm10":"16","co2":"1130","pm1Particles":"16","humidity":"41.59","temperature":"26.84","createdAt":"May 13, 2021 2:12 PM","pa":"8"}
+
+
+
+
+* 알고리즘
+nodejs 서버 실행
+vue.js data 로딩 시작
+ -> db접근 sensor_id 조회 
+ -> 조회된 sensor_id으로 api 호출(http://127.0.0.1:3000/last_data/${sensor.sensor_id}) -> DB에서 해당 data 값 호출 
+ -> JSON 형식 data {"pm1":"0","pm2_5":"6","pm10":"16","co2":"1130","pm1Particles":"16","humidity":"41.59","temperature":"26.84","createdAt":"May 13, 2021 2:12 PM","pa":"8"}
+
+sensor data 수신 및 DB 저장
+ -> 127.0.0.1:3000/api/kfl/data? get 방식으로 arilab sensor 측에서 보내는 JSON형식 데이터 수신
+ -> *JSON형식 data 파라미터 참고
+ -> sensor로 수신 받은 data JSON 형식으로 변경후 DB에 저장
+
+
+* 문제점(내부망)
+ - 1. 미세먼지 센서 - 공유기 통신 (불안정시 data 수신 딜레이 발생)(약 5-15초)
+ - 2. 차압센서 값 로딩 - 미세먼지 센서 값 수신 후에 차압센서값 저장하기에 미세먼지센서 통신 불안정시 data 수신 딜레이 발생 
+
+* 추가 개선점
+ - 1. DB 데이터값 많이 적재 되어 있다면 data 호출시 지연시간 발생 -> 2주, 한달 단위로 DB csv파일로 저장후 data 초기화 진행 예정
+ - 2. 
+
+
+
+
+
+ 
+
+
+
+
+
+    
+
+
+
+
+

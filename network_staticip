@@ -1,0 +1,14 @@
+/etc/network/interfaces
+
+auto [장치명]
+iface [장치명] inet static
+address [고정으로 설정할 내부 ip] (192.168.0.0 /24)
+netmask 255.255.255.0
+gateway 192.168.0.1
+network 192.168.0.0
+broadcast 192.168.0.255
+dns-nameservers 168.126.363.1 168.126.63.2
+
+sudo /etc/init.d/networking restart
+
+sudo reboot
