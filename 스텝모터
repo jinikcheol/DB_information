@@ -1,0 +1,48 @@
+#define steps 5
+#define dir 6
+#define ms1 8
+#define ms2 9
+#define ms3 10      //핀연결
+#define sleep 11
+
+unsigned int val1, val2, val3;  //입력할 변수값 스텝수, 회전속도 딜레이, 회전방향
+unsigned int i;     //for문에 사용할 변수
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(steps, OUTPUT);
+  pinMode(dir, OUTPUT);
+  pinMode(ms1, OUTPUT);
+  pinMode(ms2, OUTPUT);
+  pinMode(ms3, OUTPUT);   //신호보낼 핀 출력설정
+  pinMode(sleep, INPUT);   
+  
+  digitalWrite(ms1, LOW);
+  digitalWrite(ms2, LOW);
+  digitalWrite(ms3, LOW);    //분주설정
+}
+
+void loop(){
+    val1=10000;   //스텝수 입력
+    val2=600;   //회전속도를 결정하는 딜레이값 입력(값이 작을수록 회전속도가 빨라짐)
+   digitalWrite(dir, HIGH);      //회전방향 출력
+   Serial.println(1);
+   for(i=0; i<val1; i++){
+   digitalWrite(steps, HIGH);
+   delayMicroseconds(val2);          //딜레이값
+   digitalWrite(steps, LOW);
+   delayMicroseconds(val2);
+   }
+   
+   
+    digitalWrite(sleep, HIGH);
+    Serial.println(0);
+    digitalWrite(dir, LOW);      //회전방향 출력
+    for(i=0; i<val1; i++){
+    digitalWrite(steps, HIGH);
+    delayMicroseconds(val2);          //딜레이값
+    digitalWrite(steps, LOW);
+    delayMicroseconds(val2);
+    }
+    digitalWrite(sleep, HIGH);
+}
